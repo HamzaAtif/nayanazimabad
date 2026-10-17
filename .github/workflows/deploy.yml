@@ -1,0 +1,58 @@
+name: Deploy (manual, Vercel CLI)
+
+# Optional escape hatch. The normal path is Vercel's Git integration: connect
+# the repo in the Vercel dashboard and every push deploys automatically.
+#
+# Only use this workflow if you want GitHub Actions to own deployments instead.
+# If you do, set "github": { "enabled": false } in vercel.json so the two do not
+# build the same commit twice, and add these repository secrets:
+#   VERCEL_TOKEN        – https://vercel.com/account/tokens
+#   VERCEL_ORG_ID       – from .vercel/project.json after `vercel link`
+#   VERCEL_PROJECT_ID   – from .vercel/project.json after `vercel link`
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        default: production
+        type: choice
+        options: [production, preview]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint, typecheck and test
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
+
+      - name: Pull Vercel environment
+        run: npx vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Build on Vercel's infrastructure
+        run: npx vercel build ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy prebuilt output
+        run: npx vercel deploy --prebuilt ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

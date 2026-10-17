@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --header-height: 4.5rem;
+
+    /*
+     * Self-contained font stacks: no build-time or runtime requests to Google
+     * Fonts. Swap these for next/font variables (see src/app/layout.tsx) if you
+     * want the Inter/Fraunces pairing on a host with network access.
+     */
+    --font-inter: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+      Arial, 'Noto Sans', sans-serif;
+    --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman',
+      serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-sand-100 text-ink antialiased;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+  }
+
+  /* Visible, consistent focus ring for keyboard users (WCAG 2.4.7). */
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    @apply outline-none ring-2 ring-teal-600 ring-offset-2 ring-offset-sand-100;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors;
+  }
+
+  .btn-primary {
+    @apply btn bg-teal-600 text-white hover:bg-teal-700;
+  }
+
+  .btn-secondary {
+    @apply btn border border-teal-600/40 bg-white text-teal-700 hover:bg-teal-50;
+  }
+
+  .btn-ghost {
+    @apply btn text-teal-700 hover:bg-teal-50;
+  }
+
+  .card {
+    @apply rounded-2xl border border-ink/10 bg-white shadow-card;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-teal-600;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border border-ink/10 bg-sand-50 px-3 py-1 text-xs text-ink-soft;
+  }
+
+  .prose-page {
+    @apply max-w-2xl text-base leading-relaxed text-ink-soft;
+  }
+}
+
+@layer utilities {
+  .skip-link {
+    @apply absolute left-4 top-3 z-[100] -translate-y-24 rounded-full bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition-transform focus-visible:translate-y-0;
+  }
+
+  /* Diagonal hatch used for "photo pending" placeholder tiles. */
+  .placeholder-hatch {
+    background-color: #e9e0cd;
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(15, 43, 46, 0.06) 0px,
+      rgba(15, 43, 46, 0.06) 8px,
+      transparent 8px,
+      transparent 16px
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

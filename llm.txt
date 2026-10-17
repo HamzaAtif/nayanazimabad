@@ -1,0 +1,101 @@
+# llm.txt — prompts for GPT-4 / Claude when extending this codebase
+
+Context to paste before any of the prompts below:
+
+> You are working in `nayanazimabad-web`, a Next.js 14 (App Router) + TypeScript + Tailwind site for
+> Naya Nazimabad, a housing community in Karachi. Content lives in typed modules in `src/data/*.ts`.
+> The home page is a three.js / @react-three/fiber 3D masterplan in `src/components/three/`. The
+> project ships no images: façades, roads and grass are canvas-generated textures, and cards use SVG
+> elevations. Never invent project facts — mark them unspecified, as the existing data does.
+
+---
+
+## 1. Content
+
+- "Add a new project to `src/data/projects.ts` called **Naya Heights**: 2 & 3 bed DD apartments in
+  Block F, under construction. Use the exact shape of the existing entries, set `gallery` entries to
+  `src: null`, and give it a `massing` that places it inside the Block F rect in
+  `src/data/masterplan.ts` without overlapping an existing tower or amenity."
+
+- "Read `src/data/amenities.ts`. For every entry with `detailUnspecified: true`, draft a two-sentence
+  description that stays strictly factual — if the official site publishes nothing, keep the
+  existing text and do not speculate."
+
+- "Write the alt text and caption for each `gallery` slot in `src/data/projects.ts`. Captions must
+  describe the shot the client still has to supply; never imply the photo exists."
+
+## 2. 3D masterplan
+
+- "In `src/components/three/Tower.tsx`, add a crown detail (setback upper storeys plus a rooftop
+  pergola) that only appears when `project.massing.floors >= 20`. Keep it inside the existing
+  `useMemo` façade flow and do not add new draw calls per frame."
+
+- "Add a `labels` heatmap mode to `src/components/three/MasterplanScene.tsx`: when enabled, each
+  tower's drei `<Html>` label also shows its storey count and status. Wire a toggle into
+  `MasterplanExperience.tsx` next to the existing Amenities / Labels / Day-Night buttons."
+
+- "Write a `useReducedMotion()` hook and refactor `MasterplanExperience.tsx` and `CameraRig.tsx` to
+  use it instead of the inline `matchMedia` effect. Behaviour must not change."
+
+- "The procedural city in `src/data/masterplan.ts` should gain a ring of mid-rise buildings along
+  the Business Enclave edge. Extend `generateBungalows` with an optional `style` argument rather
+  than writing a second generator."
+
+## 3. Pages and components
+
+- "Create `src/app/faq/page.tsx` for Naya Nazimabad. Use the `PageHeader` component, add a matching
+  `buildMetadata` export with a unique description, add FAQPage JSON-LD via the `JsonLd` component,
+  and register the route in `src/app/sitemap.ts` and the footer links in `src/data/site.ts`."
+
+- "Build a `CompareTable` component that takes an array of project slugs and renders a responsive,
+  accessible comparison of headline, unit types, status, block and storey count. Mark up the header
+  cells with `scope=\"col\"` and row headers with `scope=\"row\"`."
+
+- "Extend `src/components/PlaceholderTile.tsx` so that when `src` is provided it renders a
+  `next/image` with the caption as alt text, and when it is null it keeps the hatch placeholder."
+
+## 4. Backend
+
+- "Add `GET /api/projects/[slug]` that returns one project as JSON, 404s with `{ ok: false }` for an
+  unknown slug, and sets the same cache headers as `src/app/api/projects/route.ts`."
+
+- "Add a `POST /api/newsletter` route that validates an email with zod, rate-limits by IP the same
+  way `src/app/api/contact/route.ts` does, and returns 201 with `{ ok: true }`."
+
+- "Switch `src/app/api/contact/route.ts` from the in-memory rate limiter to Upstash Redis
+  (`@upstash/ratelimit`), keeping the existing response contract and tests passing."
+
+## 5. Database
+
+- "Using `prisma/schema.prisma`, write a `src/lib/content.ts` data-access layer with
+  `getProjects()`, `getProject(slug)` and `getAmenities()` that read through Prisma and return the
+  same shapes as `src/data/*.ts`. Pages must keep working when `DATABASE_URL` is unset by falling
+  back to the static modules."
+
+- "Write the Prisma migration and updated seed for a many-to-many `BuildingAmenity` join table,
+  replacing the nullable `Amenity.buildingId`."
+
+## 6. Quality, SEO and ops
+
+- "Add Jest tests for `src/components/ContactForm.tsx`: invalid email shows the inline error, and a
+  successful submit calls `fetch` once with the JSON body. Mock `global.fetch`."
+
+- "Audit the site for WCAG 2.1 AA: report heading order per route, colour-contrast failures against
+  the palette in `tailwind.config.ts`, and any control without an accessible name. Fix what you
+  find."
+
+- "Write a GitHub Actions workflow that runs `npm run lint`, `npm run typecheck`, `npm test` and
+  `npm run build` on every pull request, caches npm, and uploads the Lighthouse report as an
+  artifact."
+
+- "Generate the Vercel deployment checklist for this repo: required environment variables, the
+  production-branch setting, and how to confirm the `/api/contact` route is running as a Node.js
+  serverless function rather than being statically optimised."
+
+## Conventions to remind the model of
+
+- Content facts come from nayanazimabad.com or are marked unspecified. Never fabricate prices,
+  possession dates or amenity details.
+- Every new route needs metadata (`buildMetadata`), a sitemap entry, and JSON-LD where it fits.
+- Anything inside `src/components/three/` must stay client-only and dynamically imported.
+- Placeholders over stock photography; generated textures over image files.

@@ -1,0 +1,145 @@
+import type { Amenity } from '@/types/content';
+
+/**
+ * Amenities as listed on nayanazimabad.com.
+ * Where the official site publishes no description, `detailUnspecified` is true
+ * and the card says so instead of inventing facilities.
+ */
+export const AMENITIES: Amenity[] = [
+  {
+    id: 'gymkhana',
+    name: 'Gymkhana',
+    kind: 'club',
+    description:
+      'The members’ club at the heart of the community, anchoring Block A next to Signature Tower.',
+    detailUnspecified: true,
+    block: 'Block A',
+    position: [-52, -52],
+    footprint: [42, 32],
+  },
+  {
+    id: 'jama-masjid',
+    name: 'Jama Masjid',
+    kind: 'masjid',
+    description: 'The principal mosque of Naya Nazimabad.',
+    detailUnspecified: true,
+    block: 'Central',
+    position: [-2, -82],
+    footprint: [22, 22],
+  },
+  {
+    id: 'cricket-stadium',
+    name: 'Cricket Stadium & Academy',
+    kind: 'cricket',
+    description:
+      'Described by Naya Nazimabad as its flagship cricket stadium, with an attached academy. It sits beside the Gymkhana in Block A.',
+    detailUnspecified: false,
+    block: 'Block A',
+    position: [-100, -50],
+    footprint: [46, 34],
+  },
+  {
+    id: 'padel-court',
+    name: 'Padel Court',
+    kind: 'padel',
+    description: 'Padel courts added to the sports programme.',
+    detailUnspecified: true,
+    block: 'Central',
+    position: [22, -48],
+    footprint: [16, 16],
+  },
+  {
+    id: 'ali-habib-medical-center',
+    name: 'Ali Habib Medical Center',
+    kind: 'clinic',
+    description: 'Neighbourhood medical centre serving residents.',
+    detailUnspecified: true,
+    block: 'West',
+    position: [-70, -18],
+    footprint: [20, 18],
+  },
+  {
+    id: 'football-stadium',
+    name: 'Football Stadium & Academy',
+    kind: 'football',
+    description: 'Full-size football ground with academy coaching.',
+    detailUnspecified: true,
+    block: 'South-east',
+    position: [62, 62],
+    footprint: [52, 38],
+  },
+  {
+    id: 'mohalla-masjid-block-c',
+    name: 'Mohalla Masjid Block – C',
+    kind: 'masjid',
+    description: 'Neighbourhood mosque for Block C.',
+    detailUnspecified: true,
+    block: 'Block C',
+    position: [96, -78],
+    footprint: [18, 18],
+  },
+  {
+    id: 'basketball-academy',
+    name: 'Basketball Academy',
+    kind: 'basketball',
+    description: 'Outdoor basketball courts with coaching.',
+    detailUnspecified: true,
+    block: 'Block D',
+    position: [96, 12],
+    footprint: [18, 18],
+  },
+  {
+    id: 'horse-riding-club',
+    name: 'Horse Riding Club',
+    kind: 'riding',
+    description: 'Riding club and trails on the western edge of the community.',
+    detailUnspecified: true,
+    block: 'South-west',
+    position: [-96, 62],
+    footprint: [40, 30],
+  },
+  {
+    id: 'education-complex',
+    name: 'Education Complex',
+    kind: 'school',
+    description: 'School and college campus within the gated community.',
+    detailUnspecified: true,
+    block: 'South',
+    position: [10, 62],
+    footprint: [44, 28],
+  },
+  {
+    id: 'vocational-training-center',
+    name: 'Vocational Training Center',
+    kind: 'vocational',
+    description: 'Skills and vocational training facility for residents.',
+    detailUnspecified: true,
+    block: 'South-west',
+    position: [-62, 60],
+    footprint: [30, 24],
+  },
+  {
+    id: 'hospital-medical-center',
+    name: 'Hospital & Medical Center',
+    kind: 'hospital',
+    description: 'Hospital and medical centre planned for the community.',
+    detailUnspecified: true,
+    block: 'South-east',
+    position: [96, 44],
+    footprint: [30, 24],
+  },
+  {
+    id: 'banquet-hall-lawn',
+    name: 'Banquet Hall / Lawn',
+    kind: 'banquet',
+    description: 'Banquet hall with lawn for weddings and community events.',
+    detailUnspecified: true,
+    block: 'West',
+    position: [-62, 6],
+    footprint: [28, 22],
+  },
+];
+
+export function getAmenity(id: string): Amenity | undefined {
+  return AMENITIES.find((a) => a.id === id);
+}

@@ -1,0 +1,110 @@
+// Naya Nazimabad — relational schema (PostgreSQL).
+//
+// The site does NOT need a database: all content is served from the typed
+// modules in src/data, which is why Prisma is not installed by default. This
+// schema is here for when you want editorial content in Postgres/Supabase.
+//
+// To switch the content layer over:
+//   1. npm i -D prisma @prisma/client
+//   2. put your connection string in .env as DATABASE_URL
+//   3. npx prisma migrate dev --name init
+//   4. npm run prisma:seed
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BuildingStatus {
+  DELIVERED
+  UNDER_CONSTRUCTION
+  UPCOMING
+}
+
+model Building {
+  id          Int            @id @default(autoincrement())
+  slug        String         @unique
+  name        String
+  type        String
+  headline    String
+  summary     String
+  description String
+  address     String?
+  phone       String?
+  status      BuildingStatus @default(UNDER_CONSTRUCTION)
+  block       String?
+  unitTypes   String[]
+  features    String[]
+
+  // Masterplan placement (schematic, not survey data).
+  positionX   Float
+  positionZ   Float
+  footprintW  Float
+  footprintD  Float
+  towers      Int            @default(1)
+  floors      Int            @default(1)
+  unbuilt     Boolean        @default(false)
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  amenities   Amenity[]
+  news        News[]
+  images      Image[]
+
+  @@index([status])
+}
+
+model Amenity {
+  id                Int       @id @default(autoincrement())
+  slug              String    @unique
+  name              String
+  kind              String
+  description       String
+  block             String?
+  detailUnspecified Boolean   @default(true)
+  positionX         Float
+  positionZ         Float
+  footprintW        Float
+  footprintD        Float
+
+  // Null = a community-wide amenity rather than one building's facility.
+  buildingId        Int?
+  building          Building? @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([buildingId])
+}
+
+model News {
+  id        Int       @id @default(autoincrement())
+  title     String
+  link      String
+  source    String
+  summary   String
+  publishedAt DateTime?
+
+  buildingId Int?
+  building   Building? @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@index([buildingId])
+}
+
+model Image {
+  id        Int       @id @default(autoincrement())
+  url       String
+  caption   String
+  alt       String?
+  sortOrder Int       @default(0)
+
+  buildingId Int?
+  building   Building? @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@index([buildingId])
+}
